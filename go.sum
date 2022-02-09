@@ -1,0 +1,10 @@
+github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/BurntSushi/toml v1.0.0 h1:dtDWrepsVPfW9H/4y7dDgFc2MBUSeJhlaDtK13CxFlU=
+github.com/BurntSushi/toml v1.0.0/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
+github.com/cristalhq/aconfig v0.16.1/go.mod h1:NXaRp+1e6bkO4dJn+wZ71xyaihMDYPtCSvEhMTm/H3E=
+github.com/cristalhq/aconfig v0.16.8 h1:lg8i0XHgfhvsnjNM5q/ou6jIHDRXlbBybjRP9t2fWuw=
+github.com/cristalhq/aconfig v0.16.8/go.mod h1:NXaRp+1e6bkO4dJn+wZ71xyaihMDYPtCSvEhMTm/H3E=
+github.com/cristalhq/aconfig/aconfigtoml v0.16.1 h1:q9DJfJqdLvZj7vL3bOIR6QM0ySpA0i6X8CZ8FNob6nc=
+github.com/cristalhq/aconfig/aconfigtoml v0.16.1/go.mod h1:VfRDnJBq09TZXiQdnnd4CBsNyj4s7AEDJlCxDSDt5DI=
+github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 h1:wG8n/XJQ07TmjbITcGiUaOtXxdrINDz1b0J1w0SzqDc=
+github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1/go.mod h1:A2S0CWkNylc2phvKXWBBdD3K0iGnDBGbzRpISP2zBl8=
