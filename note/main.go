@@ -1,4 +1,4 @@
-package diary
+package note
 
 import (
 	"io/ioutil"
@@ -8,7 +8,7 @@ import (
 )
 
 // WritePost overwrites the note
-func WriteNote(path string, content string) error {
+func Write(path string, content string) error {
 	err := os.MkdirAll(filepath.Dir(path), 0755)
 	if err != nil {
 		return err
@@ -17,8 +17,8 @@ func WriteNote(path string, content string) error {
 	return ioutil.WriteFile(path, []byte(content), 0644)
 }
 
-// ReadNote returns the note
-func ReadNote(path string) (string, error) {
+// Read returns the note
+func Read(path string) (string, error) {
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
 		return "", err
@@ -27,8 +27,8 @@ func ReadNote(path string) (string, error) {
 	return string(file), nil
 }
 
-// ListNotes returns a list of notes with the given prefix
-func ListNotes(prefix string) ([]string, error) {
+// List returns a list of notes with the given prefix
+func List(prefix string) ([]string, error) {
 	var notes []string
 	err := filepath.Walk(prefix,
 		func(path string, info os.FileInfo, err error) error {
@@ -44,8 +44,8 @@ func ListNotes(prefix string) ([]string, error) {
 	return notes, nil
 }
 
-// DeleteNote deletes the note
-func DeleteNote(path string) error {
+// Delete deletes the note
+func Delete(path string) error {
 	err := os.Remove(path)
 	return err
 }

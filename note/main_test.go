@@ -1,4 +1,4 @@
-package diary
+package note
 
 import (
 	"os"
