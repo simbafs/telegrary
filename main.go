@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path"
 	"strconv"
 	"time"
 
-	// "github.com/simba-fs/gitdiary/note"
 	"github.com/simba-fs/gitdiary/bot"
+	"github.com/simba-fs/gitdiary/note"
 
 	"github.com/cristalhq/aconfig"
 	"github.com/cristalhq/aconfig/aconfigtoml"
@@ -16,15 +18,20 @@ import (
 // Config is the type of config
 type Config struct {
 	Token string
+	Root  string
 }
 
 var config Config
 
 func init() {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatal(err)
+	}
 	loader := aconfig.LoaderFor(&config, aconfig.Config{
 		SkipFlags: true,
 		SkipEnv:   true,
-		Files:     []string{"~/.config/gitdiary.toml", "gitdiary.toml"},
+		Files:     []string{path.Join(configDir, "gitdiary.toml"), "gitdiary.toml"},
 		FileDecoders: map[string]aconfig.FileDecoder{
 			".toml": aconfigtoml.New(),
 		},
@@ -33,36 +40,54 @@ func init() {
 	if err := loader.Load(); err != nil {
 		panic(err)
 	}
+
+	if config.Root == "" {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			panic(err)
+		}
+		config.Root = path.Join(home, ".local", "gitdiary")
+	}
 }
 
 func main() {
-	fmt.Println(os.Args[1:], config)
+	log.Println(os.Args[1:], config)
 
-	if len(os.Args) > 1 && os.Args[1] == "bot" {
-		fmt.Println("start bot")
-		bot.Run()
-	} else {
-		// convert date from string to int
-		var date []int
-		for _, v := range os.Args[1:] {
-			i, err := strconv.Atoi(v)
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			date = append(date, i)
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "bot":
+			log.Println("start bot")
+			bot.Run(config.Token)
+			return
+		case "-h", "--help":
+			fmt.Println("Usage: gitdiary [bot | year month day]\n  configfile: ~/.config/gitdiary.toml, ./gitdiary.toml")
+			return
 		}
-		fmt.Println(date)
-
-		year, month, day := time.Now().Date()
-		switch len(date) {
-		case 3:
-			year, month, day = date[0], time.Month(date[1]), date[2]
-		case 2:
-			month, day = time.Month(date[0]), date[1]
-		case 1:
-			day = date[0]
-		}
-		fmt.Println(year, month, day)
 	}
+
+	// convert date from string to int
+	var date []int
+	for _, v := range os.Args[1:] {
+		i, err := strconv.Atoi(v)
+		if err != nil {
+			log.Println(err)
+			os.Exit(1)
+		}
+		date = append(date, i)
+	}
+	log.Println(date)
+
+	year, month, day := time.Now().Date()
+	switch len(date) {
+	case 3:
+		year, month, day = date[0], time.Month(date[1]), date[2]
+	case 2:
+		month, day = time.Month(date[0]), date[1]
+	case 1:
+		day = date[0]
+	}
+
+	note.Open(fmt.Sprintf("%s/%d/%d/%d.md", config.Root, year, month, day))
+	log.Println(year, month, day)
+
 }

@@ -2,15 +2,39 @@ package note
 
 import (
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 )
 
-// WritePost overwrites the note
-func Write(path string, content string) error {
+func mkdir(path string) error {
 	err := os.MkdirAll(filepath.Dir(path), 0755)
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Open use the default editor to open the note
+func Open(path string) error {
+	if err := mkdir(path); err != nil {
+		return err
+	}
+	editor := os.Getenv("EDITOR")
+	if editor == "" {
+		editor = "vim"
+	}
+	log.Println(editor, path)
+	cmd := exec.Command(editor, path)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
+}
+
+// WritePost overwrites the note
+func Write(path string, content string) error {
+	if err := mkdir(path); err != nil {
 		return err
 	}
 

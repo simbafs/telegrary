@@ -4,36 +4,12 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/cristalhq/aconfig"
-	"github.com/cristalhq/aconfig/aconfigtoml"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// Config is the type of config
-type Config struct {
-	Token string
-}
-
-var config Config
-
-func init() {
-	loader := aconfig.LoaderFor(&config, aconfig.Config{
-		EnvPrefix:  "gitdiary",
-		FlagPrefix: "gitdiary",
-		Files:      []string{"~/.config/gitdiary.toml", "gitdiary.toml"},
-		FileDecoders: map[string]aconfig.FileDecoder{
-			".toml": aconfigtoml.New(),
-		},
-	})
-
-	if err := loader.Load(); err != nil {
-		panic(err)
-	}
-}
-
 // Run starts the bot
-func Run() {
-	bot, err := tgbotapi.NewBotAPI(config.Token)
+func Run(token string) {
+	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		panic(err)
 	}
