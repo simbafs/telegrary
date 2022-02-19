@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/simba-fs/gitdiary/bot"
-	"github.com/simba-fs/gitdiary/note"
+	"github.com/simba-fs/telegrary/bot"
+	"github.com/simba-fs/telegrary/note"
 
 	"github.com/cristalhq/aconfig"
 	"github.com/cristalhq/aconfig/aconfigtoml"
@@ -31,7 +31,7 @@ func init() {
 	loader := aconfig.LoaderFor(&config, aconfig.Config{
 		SkipFlags: true,
 		SkipEnv:   true,
-		Files:     []string{path.Join(configDir, "gitdiary.toml"), "gitdiary.toml"},
+		Files:     []string{path.Join(configDir, "telegrary.toml"), "telegrary.toml"},
 		FileDecoders: map[string]aconfig.FileDecoder{
 			".toml": aconfigtoml.New(),
 		},
@@ -46,7 +46,7 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
-		config.Root = path.Join(home, ".local", "gitdiary")
+		config.Root = path.Join(home, ".local", "share", "telegrary")
 	}
 }
 
@@ -60,7 +60,7 @@ func main() {
 			bot.Run(config.Token)
 			return
 		case "-h", "--help":
-			fmt.Println("Usage: gitdiary [bot | year month day]\n  configfile: ~/.config/gitdiary.toml, ./gitdiary.toml")
+			fmt.Println("Usage: telegrary [bot | year month day]\n  configfile: ~/.config/telegrary.toml, ./telegrary.toml")
 			return
 		}
 	}

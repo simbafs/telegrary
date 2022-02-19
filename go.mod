@@ -1,4 +1,4 @@
-module github.com/simba-fs/gitdiary
+module github.com/simba-fs/telegrary
 
 go 1.17
 
