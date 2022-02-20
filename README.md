@@ -8,7 +8,7 @@ Telegrary 是一個 Telegram 機器人，讓你可以在 Telegram 上管理日�
 把你的 Telegram bot token 放在 `~/.config/telegrary.toml` 或 `./telegrary.toml`，像下面這樣：
 
 ```toml
-token = dafjskdsajflkdsajflkdsjflkjdsalkf
+token = "dafjskdsajflkdsajflkdsjflkjdsalkf"
 ```
 
 然後執行命令 `telegrary bot`
