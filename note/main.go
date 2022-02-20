@@ -33,12 +33,23 @@ func Open(path string) error {
 }
 
 // WritePost overwrites the note
-func Write(path string, content string) error {
+func Write(path string, content string, overwrite bool) error {
 	if err := mkdir(path); err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(path, []byte(content), 0644)
+	flag := os.O_CREATE | os.O_WRONLY
+	if !overwrite {
+		flag = flag | os.O_APPEND
+	}
+
+	f, err := os.OpenFile(path, flag, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	_, err = f.Write([]byte(content))
+	return err
 }
 
 // Read returns the note

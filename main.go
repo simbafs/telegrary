@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/simba-fs/telegrary/bot"
 	"github.com/simba-fs/telegrary/note"
 
 	"github.com/cristalhq/aconfig"
@@ -50,28 +49,13 @@ func init() {
 	}
 }
 
-func main() {
-	log.Println(os.Args[1:], config)
-
-	if len(os.Args) > 1 {
-		switch os.Args[1] {
-		case "bot":
-			log.Println("start bot")
-			bot.Run(config.Token)
-			return
-		case "-h", "--help":
-			fmt.Println("Usage: telegrary [bot | year month day]\n  configfile: ~/.config/telegrary.toml, ./telegrary.toml")
-			return
-		}
-	}
-
+func getDate(raw []string) (int, int, int) {
 	// convert date from string to int
 	var date []int
-	for _, v := range os.Args[1:] {
+	for _, v := range raw {
 		i, err := strconv.Atoi(v)
 		if err != nil {
-			log.Println(err)
-			os.Exit(1)
+			break
 		}
 		date = append(date, i)
 	}
@@ -86,6 +70,29 @@ func main() {
 	case 1:
 		day = date[0]
 	}
+
+	return year, int(month), day
+}
+
+func main() {
+	log.Println(os.Args[1:], config)
+
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "bot":
+			if config.Token == "" {
+				log.Fatal("token is required")
+			}
+			log.Println("start bot")
+			startBot(config.Token)
+			return
+		case "-h", "--help":
+			fmt.Println("Usage: telegrary [bot | year month day]\n  configfile: ~/.config/telegrary.toml, ./telegrary.toml")
+			return
+		}
+	}
+
+	year, month, day := getDate(os.Args[1:])
 
 	note.Open(fmt.Sprintf("%s/%d/%d/%d.md", config.Root, year, month, day))
 	log.Println(year, month, day)

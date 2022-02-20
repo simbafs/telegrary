@@ -1,14 +1,22 @@
 package bot
 
 import (
-	"fmt"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+type Command func(bot *tgbotapi.BotAPI, update *tgbotapi.Update)
+
+var Commands map[string]Command = make(map[string]Command)
+
+func AddCmd(name string, command Command) {
+	Commands[name] = command
+}
+
 // Run starts the bot
 func Run(token string) {
+	log.Println("token", token)
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		panic(err)
@@ -32,26 +40,11 @@ func Run(token string) {
 			continue
 		}
 
-		fmt.Println(update.Message.Venue)
-
-		// Create a new MessageConfig. We don't have text yet,
-		// so we leave it empty.
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
-
 		// Extract the command from the Message.
-		switch update.Message.Command() {
-		case "help":
-			msg.Text = "I understand /sayhi and /status."
-		case "sayhi":
-			msg.Text = "Hi :)"
-		case "status":
-			msg.Text = "I'm ok."
-		default:
-			msg.Text = "I don't know that command"
+		exec, ok := Commands[update.Message.Command()]
+		if !ok {
+			continue
 		}
-
-		if _, err := bot.Send(msg); err != nil {
-			log.Panic(err)
-		}
+		exec(bot, &update)
 	}
 }
