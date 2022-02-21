@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 
 	// "log"
@@ -11,6 +10,8 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/simba-fs/telegrary/bot"
 	"github.com/simba-fs/telegrary/note"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func reply(bot *tgbotapi.BotAPI, update *tgbotapi.Update, text string) {
@@ -32,7 +33,7 @@ func init() {
 	})
 	bot.AddCmd("write", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
 		year, month, day := getDate(strings.Split(update.Message.Text, " ")[1:])
-		log.Println(update.Message.Text)
+		log.Debugln(update.Message.Text)
 
 		// get content
 		a := strings.Split(update.Message.Text, " ")

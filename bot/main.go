@@ -1,9 +1,8 @@
 package bot
 
 import (
-	"log"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	log "github.com/sirupsen/logrus"
 )
 
 type Command func(bot *tgbotapi.BotAPI, update *tgbotapi.Update)
@@ -16,7 +15,7 @@ func AddCmd(name string, command Command) {
 
 // Run starts the bot
 func Run(token string) {
-	log.Println("token", token)
+	log.SetLevel(log.DebugLevel)
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		panic(err)
@@ -24,7 +23,7 @@ func Run(token string) {
 
 	bot.Debug = true
 
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+	log.Debugf("Authorized on account %s", bot.Self.UserName)
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60

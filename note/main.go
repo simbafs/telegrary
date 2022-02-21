@@ -2,10 +2,11 @@ package note
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func mkdir(path string) error {
@@ -25,7 +26,7 @@ func Open(path string) error {
 	if editor == "" {
 		editor = "vim"
 	}
-	log.Println(editor, path)
+	log.Debugln(editor, path)
 	cmd := exec.Command(editor, path)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout

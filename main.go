@@ -1,8 +1,8 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
-	"log"
 	"os"
 	"path"
 	"strconv"
@@ -12,6 +12,8 @@ import (
 
 	"github.com/cristalhq/aconfig"
 	"github.com/cristalhq/aconfig/aconfigtoml"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Config is the type of config
@@ -22,15 +24,28 @@ type Config struct {
 
 var config Config
 
+var configPath []string
+
+//go:embed help.txt
+var helpText string
+
 func init() {
+	// get config path, e.g. ~/.config
 	configDir, err := os.UserConfigDir()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	configPath = []string{
+		path.Join(configDir, "telegrary.toml"),
+		path.Join(".", "telegrary.toml"),
+	}
+
+	// load config
 	loader := aconfig.LoaderFor(&config, aconfig.Config{
 		SkipFlags: true,
 		SkipEnv:   true,
-		Files:     []string{path.Join(configDir, "telegrary.toml"), "telegrary.toml"},
+		Files:     configPath,
 		FileDecoders: map[string]aconfig.FileDecoder{
 			".toml": aconfigtoml.New(),
 		},
@@ -40,6 +55,7 @@ func init() {
 		panic(err)
 	}
 
+	// set default diary root
 	if config.Root == "" {
 		home, err := os.UserHomeDir()
 		if err != nil {
@@ -47,6 +63,9 @@ func init() {
 		}
 		config.Root = path.Join(home, ".local", "share", "telegrary")
 	}
+
+	// set log level
+	log.SetLevel(log.ErrorLevel)
 }
 
 func getDate(raw []string) (int, int, int) {
@@ -59,7 +78,7 @@ func getDate(raw []string) (int, int, int) {
 		}
 		date = append(date, i)
 	}
-	log.Println(date)
+	log.Debugln(date)
 
 	year, month, day := time.Now().Date()
 	switch len(date) {
@@ -75,26 +94,34 @@ func getDate(raw []string) (int, int, int) {
 }
 
 func main() {
-	log.Println(os.Args[1:], config)
+	log.Debugln(os.Args[1:], config)
 
 	if len(os.Args) > 1 {
+		// parse flag
+
 		switch os.Args[1] {
 		case "bot":
 			if config.Token == "" {
 				log.Fatal("token is required")
 			}
-			log.Println("start bot")
+			log.Debugln("start bot")
 			startBot(config.Token)
-			return
-		case "-h", "--help":
-			fmt.Println("Usage: telegrary [bot | year month day]\n  configfile: ~/.config/telegrary.toml, ./telegrary.toml")
-			return
+		case "config":
+			for _, v := range configPath {
+				if _, err := os.Stat(v); err == nil {
+					note.Open(v)
+					return
+				}
+			}
+		case "-h", "--help", "help":
+			fmt.Println(helpText)
 		}
+		return
 	}
 
 	year, month, day := getDate(os.Args[1:])
 
 	note.Open(fmt.Sprintf("%s/%d/%d/%d.md", config.Root, year, month, day))
-	log.Println(year, month, day)
+	log.Debugln(year, month, day)
 
 }
