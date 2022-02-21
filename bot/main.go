@@ -8,14 +8,15 @@ import (
 type Command func(bot *tgbotapi.BotAPI, update *tgbotapi.Update)
 
 var Commands map[string]Command = make(map[string]Command)
+var CommandsList []string = make([]string, 3)
 
 func AddCmd(name string, command Command) {
 	Commands[name] = command
+	CommandsList = append(CommandsList, name)
 }
 
 // Run starts the bot
 func Run(token string) {
-	log.SetLevel(log.DebugLevel)
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		panic(err)
@@ -23,7 +24,7 @@ func Run(token string) {
 
 	bot.Debug = true
 
-	log.Debugf("Authorized on account %s", bot.Self.UserName)
+	log.Infof("Authorized on account %s", bot.Self.UserName)
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60

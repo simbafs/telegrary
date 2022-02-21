@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/simba-fs/telegrary/bot"
+	tgbot "github.com/simba-fs/telegrary/bot"
 	"github.com/simba-fs/telegrary/note"
 
 	log "github.com/sirupsen/logrus"
@@ -19,10 +19,10 @@ func reply(bot *tgbotapi.BotAPI, update *tgbotapi.Update, text string) {
 }
 
 func init() {
-	bot.AddCmd("help", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
-		reply(bot, update, "This is a test bot")
+	tgbot.AddCmd("help", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
+		reply(bot, update, fmt.Sprintf("telegrary = telegram + diary\ncommands: %s", tgbot.CommandsList))
 	})
-	bot.AddCmd("read", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
+	tgbot.AddCmd("read", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
 		year, month, day := getDate(strings.Split(update.Message.Text, " ")[1:])
 		diary, err := note.Read(fmt.Sprintf("%s/%d/%d/%d.md", config.Root, year, month, day))
 		if err != nil {
@@ -31,7 +31,7 @@ func init() {
 		}
 		reply(bot, update, fmt.Sprintf("===== %d/%d/%d.md =====\n%s", year, month, day, diary))
 	})
-	bot.AddCmd("write", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
+	tgbot.AddCmd("write", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
 		year, month, day := getDate(strings.Split(update.Message.Text, " ")[1:])
 		log.Debugln(update.Message.Text)
 
@@ -59,5 +59,5 @@ func init() {
 }
 
 func startBot(token string) {
-	bot.Run(token)
+	tgbot.Run(token)
 }
