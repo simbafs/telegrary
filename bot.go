@@ -14,22 +14,18 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func reply(bot *tgbotapi.BotAPI, update *tgbotapi.Update, text string) {
-	bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, text))
-}
-
 func init() {
 	tgbot.AddCmd("help", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
-		reply(bot, update, fmt.Sprintf("telegrary = telegram + diary\ncommands: %s", tgbot.CommandsList))
+		tgbot.Reply(bot, update, fmt.Sprintf("telegrary = telegram + diary\ncommands: %s", tgbot.CommandsList))
 	})
 	tgbot.AddCmd("read", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
 		year, month, day := getDate(strings.Split(update.Message.Text, " ")[1:])
 		diary, err := note.Read(fmt.Sprintf("%s/%d/%d/%d.md", config.Root, year, month, day))
 		if err != nil {
-			reply(bot, update, "No diary found")
+			tgbot.Reply(bot, update, "No diary found")
 			return
 		}
-		reply(bot, update, fmt.Sprintf("===== %d/%d/%d.md =====\n%s", year, month, day, diary))
+		tgbot.Reply(bot, update, fmt.Sprintf("===== %d/%d/%d.md =====\n%s", year, month, day, diary))
 	})
 	tgbot.AddCmd("write", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
 		year, month, day := getDate(strings.Split(update.Message.Text, " ")[1:])
@@ -50,11 +46,20 @@ func init() {
 		// write
 		err := note.Write(fmt.Sprintf("%s/%d/%d/%d.md", config.Root, year, month, day), content, false)
 		if err != nil {
-			reply(bot, update, "Write failed")
+			tgbot.Reply(bot, update, "Write failed")
 			log.Fatal(err)
 			return
 		}
-		reply(bot, update, "write successfully, use /read to read it")
+		tgbot.Reply(bot, update, "write successfully, use /read to read it")
+	})
+	tgbot.AddCmd("tree", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
+		tree, err := note.Tree(config.Root)
+		if err != nil {
+			tgbot.Reply(bot, update, "Tree failed")
+			log.Error(err)
+			return
+		}
+		tgbot.Reply(bot, update, tree)
 	})
 }
 

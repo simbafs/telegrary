@@ -48,3 +48,9 @@ func Run(token string) {
 		exec(bot, &update)
 	}
 }
+
+// Reply sends a message to the chat where the command was received
+func Reply(bot *tgbotapi.BotAPI, update *tgbotapi.Update, text string) {
+	bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, text))
+}
+
