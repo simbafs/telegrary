@@ -1,127 +1,56 @@
 package main
 
 import (
-	_ "embed"
-	"fmt"
 	"os"
-	"path"
 	"strconv"
-	"time"
 
-	"github.com/simba-fs/telegrary/note"
-
-	"github.com/cristalhq/aconfig"
-	"github.com/cristalhq/aconfig/aconfigtoml"
-
+	// "github.com/simba-fs/telegrary/cmd"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
-// Config is the type of config
-type Config struct {
-	Token string
-	Root  string
+var rootCmd = &cobra.Command{
+	Use:   "telegrary",
+	Short: "Telegrary is a diary manager with build in telegram bot",
 }
-
-var config Config
-
-var configPath []string
-
-//go:embed help.txt
-var helpText string
 
 func init() {
-	// get config path, e.g. ~/.config
-	configDir, err := os.UserConfigDir()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	configPath = []string{
-		path.Join(configDir, "telegrary.toml"),
-		path.Join(".", "telegrary.toml"),
-	}
-
-	// load config
-	loader := aconfig.LoaderFor(&config, aconfig.Config{
-		SkipFlags: true,
-		SkipEnv:   true,
-		Files:     configPath,
-		FileDecoders: map[string]aconfig.FileDecoder{
-			".toml": aconfigtoml.New(),
+	rootCmd.AddCommand(&cobra.Command{
+		Use:   "bot",
+		Short: "Start telegram bot",
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Println("bot start")
+		},
+	}, &cobra.Command{
+		Use:   "config",
+		Short: "Edit config file",
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Println("edit config")
 		},
 	})
-
-	if err := loader.Load(); err != nil {
-		panic(err)
-	}
-
-	// set default diary root
-	if config.Root == "" {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			panic(err)
-		}
-		config.Root = path.Join(home, ".local", "share", "telegrary")
-	}
-
-	// set log level
-	log.SetLevel(log.ErrorLevel)
 }
 
-func getDate(raw []string) (int, int, int) {
-	// convert date from string to int
-	var date []int
-	for _, v := range raw {
-		i, err := strconv.Atoi(v)
-		if err != nil {
-			break
-		}
-		date = append(date, i)
+func execute() {
+	if err := rootCmd.Execute(); err != nil {
+		log.Fatal(err)
+		os.Exit(1)
 	}
-	log.Debugln(date)
+}
 
-	year, month, day := time.Now().Date()
-	switch len(date) {
-	case 3:
-		year, month, day = date[0], time.Month(date[1]), date[2]
-	case 2:
-		month, day = time.Month(date[0]), date[1]
-	case 1:
-		day = date[0]
-	}
-
-	return year, int(month), day
+func edit(year, month, day int) error{
+	log.Println("edit", year, month, day)
+	return nil
 }
 
 func main() {
-	log.Debugln(os.Args[1:], config)
-
 	if len(os.Args) > 1 {
-		// parse flag
-
-		switch os.Args[1] {
-		case "bot":
-			if config.Token == "" {
-				log.Fatal("token is required")
-			}
-			log.Debugln("start bot")
-			startBot(config.Token)
-		case "config":
-			for _, v := range configPath {
-				if _, err := os.Stat(v); err == nil {
-					note.Open(v)
-					return
-				}
-			}
-		case "-h", "--help", "help":
-			fmt.Println(helpText)
+		if _, err := strconv.Atoi(os.Args[1]); err == nil {
+			edit(0,0,0)
+		}else{
+			execute()
 		}
-		return
+	} else {
+		edit(0, 0, 0)
 	}
-
-	year, month, day := getDate(os.Args[1:])
-
-	note.Open(fmt.Sprintf("%s/%d/%d/%d.md", config.Root, year, month, day))
-	log.Debugln(year, month, day)
 
 }
