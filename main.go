@@ -113,6 +113,7 @@ func main() {
 					return
 				}
 			}
+			note.Open(configPath[0])
 		case "-h", "--help", "help":
 			fmt.Println(helpText)
 		}
