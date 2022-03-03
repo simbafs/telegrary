@@ -18,8 +18,9 @@ import (
 
 // Config is the type of config
 type Config struct {
-	Token string
-	Root  string
+	Token  string
+	Root   string
+	Secret string
 }
 
 var config Config

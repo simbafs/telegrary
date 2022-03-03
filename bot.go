@@ -15,6 +15,9 @@ import (
 )
 
 func init() {
+	tgbot.AddCmd("start", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
+		tgbot.Reply(bot, update, update.Message.Text)
+	})
 	tgbot.AddCmd("help", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
 		tgbot.Reply(bot, update, fmt.Sprintf("telegrary = telegram + diary\ncommands: %s", tgbot.CommandsList))
 	})
