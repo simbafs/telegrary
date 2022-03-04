@@ -46,6 +46,7 @@ func init() {
 	loader := aconfig.LoaderFor(&config, aconfig.Config{
 		SkipFlags: true,
 		SkipEnv:   true,
+		AllowUnknownFields: true,
 		Files:     configPath,
 		FileDecoders: map[string]aconfig.FileDecoder{
 			".toml": aconfigtoml.New(),
@@ -118,7 +119,6 @@ func main() {
 		case "-h", "--help", "help":
 			fmt.Println(helpText)
 		}
-		return
 	}
 
 	year, month, day := getDate(os.Args[1:])
