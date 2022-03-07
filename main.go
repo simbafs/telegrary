@@ -64,7 +64,14 @@ func init() {
 	// log.SetLevel(log.DebugLevel)
 }
 
-func getDate(raw []string) (int, int, int) {
+func addZero(i int) string {
+	if i < 10 {
+		return "0" + strconv.Itoa(i)
+	}
+	return strconv.Itoa(i)
+}
+
+func getDate(raw []string) (string, string, string) {
 	// convert date from string to int
 	var date []int
 	for _, v := range raw {
@@ -86,7 +93,7 @@ func getDate(raw []string) (int, int, int) {
 		day = date[0]
 	}
 
-	return year, int(month), day
+	return strconv.Itoa(year), addZero(int(month)), addZero(day)
 }
 
 func main() {
@@ -120,7 +127,7 @@ func main() {
 
 		year, month, day := getDate(os.Args[1:])
 
-		note.Open(fmt.Sprintf("%s/%d/%d/%d.md", config.Config.Root, year, month, day))
+		note.Open(fmt.Sprintf("%s/%s/%s/%s.md", config.Config.Root, year, month, day))
 		log.Debugln("open", year, month, day)
 	}
 	// git save
