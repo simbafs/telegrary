@@ -9,6 +9,7 @@ Available Commands:
   bot            Start telegram bot
   config         Edit config file
   help           Show this help
+  push           Commit and push to remote(if exist)
 
 Flags:
   -h, --help     Show this help
