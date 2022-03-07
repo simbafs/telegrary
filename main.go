@@ -63,34 +63,6 @@ func init() {
 	// log.SetLevel(log.DebugLevel)
 }
 
-<<<<<<< HEAD
-=======
-func getDate(raw []string) (int, int, int) {
-	// convert date from string to int
-	var date []int
-	for _, v := range raw {
-		i, err := strconv.Atoi(v)
-		if err != nil {
-			break
-		}
-		date = append(date, i)
-	}
-	log.Debugln(date)
-
-	year, month, day := time.Now().Date()
-	switch len(date) {
-	case 3:
-		year, month, day = date[0], time.Month(date[1]), date[2]
-	case 2:
-		month, day = time.Month(date[0]), date[1]
-	case 1:
-		day = date[0]
-	}
-
-	return year, int(month), day
-}
-
->>>>>>> parent of 37e3bda (Add zero if needed)
 func main() {
 	log.Debugln(os.Args[1:], config.Config)
 
@@ -122,7 +94,7 @@ func main() {
 
 		year, month, day := util.GetDate(os.Args[1:])
 
-		note.Open(fmt.Sprintf("%s/%d/%d/%d.md", config.Config.Root, year, month, day))
+		note.Open(fmt.Sprintf("%s/%s/%s/%s.md", config.Config.Root, year, month, day))
 		log.Debugln("open", year, month, day)
 	}
 	// git save
