@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"strconv"
-	"time"
 
 	"github.com/simba-fs/telegrary/config"
 	"github.com/simba-fs/telegrary/git"
 	"github.com/simba-fs/telegrary/note"
+	"github.com/simba-fs/telegrary/util"
 
 	"github.com/cristalhq/aconfig"
 	"github.com/cristalhq/aconfig/aconfigtoml"
@@ -64,6 +63,8 @@ func init() {
 	// log.SetLevel(log.DebugLevel)
 }
 
+<<<<<<< HEAD
+=======
 func getDate(raw []string) (int, int, int) {
 	// convert date from string to int
 	var date []int
@@ -89,6 +90,7 @@ func getDate(raw []string) (int, int, int) {
 	return year, int(month), day
 }
 
+>>>>>>> parent of 37e3bda (Add zero if needed)
 func main() {
 	log.Debugln(os.Args[1:], config.Config)
 
@@ -118,16 +120,20 @@ func main() {
 		}
 	} else {
 
-		year, month, day := getDate(os.Args[1:])
+		year, month, day := util.GetDate(os.Args[1:])
 
 		note.Open(fmt.Sprintf("%s/%d/%d/%d.md", config.Config.Root, year, month, day))
 		log.Debugln("open", year, month, day)
 	}
 	// git save
-	git.Commit()
+	if git.Commit() == nil {
+		fmt.Println("commit notes")
+	}
 
 	if config.Config.GitRepo != "" {
 		log.Debug("git push")
-		git.Push()
+		if git.Push() == nil {
+			fmt.Println("push notes")
+		}
 	}
 }

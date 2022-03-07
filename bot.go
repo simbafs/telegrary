@@ -9,9 +9,10 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	tgbot "github.com/simba-fs/telegrary/bot"
-	
-	"github.com/simba-fs/telegrary/note"
+
 	"github.com/simba-fs/telegrary/config"
+	"github.com/simba-fs/telegrary/note"
+	"github.com/simba-fs/telegrary/util"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -24,16 +25,16 @@ func init() {
 		tgbot.Reply(bot, update, fmt.Sprintf("telegrary = telegram + diary\ncommands: %s", tgbot.CommandsList))
 	})
 	tgbot.AddCmd("read", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
-		year, month, day := getDate(strings.Split(update.Message.Text, " ")[1:])
-		diary, err := note.Read(fmt.Sprintf("%s/%d/%d/%d.md", config.Config.Root, year, month, day))
+		year, month, day := util.GetDate(strings.Split(update.Message.Text, " ")[1:])
+		diary, err := note.Read(fmt.Sprintf("%s/%s/%s/%s.md", config.Config.Root, year, month, day))
 		if err != nil {
 			tgbot.Reply(bot, update, "No diary found")
 			return
 		}
-		tgbot.Reply(bot, update, fmt.Sprintf("===== %d/%d/%d.md =====\n%s", year, month, day, diary))
+		tgbot.Reply(bot, update, fmt.Sprintf("===== %s/%s/%s.md =====\n%s", year, month, day, diary))
 	})
 	tgbot.AddCmd("write", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
-		year, month, day := getDate(strings.Split(update.Message.Text, " ")[1:])
+		year, month, day := util.GetDate(strings.Split(update.Message.Text, " ")[1:])
 		log.Debugln(update.Message.Text)
 
 		// get content
@@ -49,7 +50,7 @@ func init() {
 		content := "\n" + strings.Trim(strings.Join(a, " "), " ")
 
 		// write
-		err := note.Write(fmt.Sprintf("%s/%d/%d/%d.md", config.Config.Root, year, month, day), content, false)
+		err := note.Write(fmt.Sprintf("%s/%s/%s/%s.md", config.Config.Root, year, month, day), content, false)
 		if err != nil {
 			tgbot.Reply(bot, update, "Write failed")
 			log.Fatal(err)
