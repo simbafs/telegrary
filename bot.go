@@ -9,7 +9,9 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	tgbot "github.com/simba-fs/telegrary/bot"
+	
 	"github.com/simba-fs/telegrary/note"
+	"github.com/simba-fs/telegrary/config"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -23,7 +25,7 @@ func init() {
 	})
 	tgbot.AddCmd("read", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
 		year, month, day := getDate(strings.Split(update.Message.Text, " ")[1:])
-		diary, err := note.Read(fmt.Sprintf("%s/%d/%d/%d.md", config.Root, year, month, day))
+		diary, err := note.Read(fmt.Sprintf("%s/%d/%d/%d.md", config.Config.Root, year, month, day))
 		if err != nil {
 			tgbot.Reply(bot, update, "No diary found")
 			return
@@ -47,7 +49,7 @@ func init() {
 		content := "\n" + strings.Trim(strings.Join(a, " "), " ")
 
 		// write
-		err := note.Write(fmt.Sprintf("%s/%d/%d/%d.md", config.Root, year, month, day), content, false)
+		err := note.Write(fmt.Sprintf("%s/%d/%d/%d.md", config.Config.Root, year, month, day), content, false)
 		if err != nil {
 			tgbot.Reply(bot, update, "Write failed")
 			log.Fatal(err)
@@ -56,7 +58,7 @@ func init() {
 		tgbot.Reply(bot, update, "write successfully, use /read to read it")
 	})
 	tgbot.AddCmd("tree", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
-		tree, err := note.Tree(config.Root)
+		tree, err := note.Tree(config.Config.Root)
 		if err != nil {
 			tgbot.Reply(bot, update, "Tree failed")
 			log.Error(err)

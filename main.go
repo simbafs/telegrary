@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/simba-fs/telegrary/config"
+	"github.com/simba-fs/telegrary/git"
 	"github.com/simba-fs/telegrary/note"
 
 	"github.com/cristalhq/aconfig"
@@ -15,15 +17,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 )
-
-// Config is the type of config
-type Config struct {
-	Token  string
-	Root   string
-	Secret string
-}
-
-var config Config
 
 var configPath []string
 
@@ -43,11 +36,11 @@ func init() {
 	}
 
 	// load config
-	loader := aconfig.LoaderFor(&config, aconfig.Config{
-		SkipFlags: true,
-		SkipEnv:   true,
+	loader := aconfig.LoaderFor(&config.Config, aconfig.Config{
+		SkipFlags:          true,
+		SkipEnv:            true,
 		AllowUnknownFields: true,
-		Files:     configPath,
+		Files:              configPath,
 		FileDecoders: map[string]aconfig.FileDecoder{
 			".toml": aconfigtoml.New(),
 		},
@@ -58,16 +51,17 @@ func init() {
 	}
 
 	// set default diary root
-	if config.Root == "" {
+	if config.Config.Root == "" {
 		home, err := os.UserHomeDir()
 		if err != nil {
 			panic(err)
 		}
-		config.Root = path.Join(home, ".local", "share", "telegrary")
+		config.Config.Root = path.Join(home, ".local", "share", "telegrary")
 	}
 
 	// set log level
 	log.SetLevel(log.ErrorLevel)
+	// log.SetLevel(log.DebugLevel)
 }
 
 func getDate(raw []string) (int, int, int) {
@@ -96,18 +90,17 @@ func getDate(raw []string) (int, int, int) {
 }
 
 func main() {
-	log.Debugln(os.Args[1:], config)
+	log.Debugln(os.Args[1:], config.Config)
 
 	if len(os.Args) > 1 {
 		// parse flag
-
 		switch os.Args[1] {
 		case "bot":
-			if config.Token == "" {
+			if config.Config.Token == "" {
 				log.Fatal("token is required")
 			}
 			log.Debugln("start bot")
-			startBot(config.Token)
+			startBot(config.Config.Token)
 		case "config":
 			for _, v := range configPath {
 				if _, err := os.Stat(v); err == nil {
@@ -116,14 +109,25 @@ func main() {
 				}
 			}
 			note.Open(configPath[0])
+			return // do not trigger git commit
+		case "push":
+			break
 		case "-h", "--help", "help":
 			fmt.Println(helpText)
+			return // do not trigger git commit
 		}
+	} else {
+
+		year, month, day := getDate(os.Args[1:])
+
+		note.Open(fmt.Sprintf("%s/%d/%d/%d.md", config.Config.Root, year, month, day))
+		log.Debugln("open", year, month, day)
 	}
+	// git save
+	git.Commit()
 
-	year, month, day := getDate(os.Args[1:])
-
-	note.Open(fmt.Sprintf("%s/%d/%d/%d.md", config.Root, year, month, day))
-	log.Debugln(year, month, day)
-
+	if config.Config.GitRepo != "" {
+		log.Debug("git push")
+		git.Push()
+	}
 }
