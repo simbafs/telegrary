@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 	"strconv"
+	_ "embed"
 
-	// "log"
 	"strings"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	tgbot "github.com/simba-fs/telegrary/bot"
 
 	"github.com/simba-fs/telegrary/config"
@@ -17,28 +16,31 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+//go:embed help/bot.txt
+var help string
+
 func init() {
-	tgbot.AddCmd("start", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
-		tgbot.Reply(bot, update, update.Message.Text)
+	tgbot.AddCmd("start", func(ctx *tgbot.Context) {
+		ctx.Call("help")
 	})
-	tgbot.AddCmd("help", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
-		tgbot.Reply(bot, update, fmt.Sprintf("telegrary = telegram + diary\ncommands: %s", tgbot.CommandsList))
+	tgbot.AddCmd("help", func(ctx *tgbot.Context) {
+		ctx.Send(help)
 	})
-	tgbot.AddCmd("read", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
-		year, month, day := util.GetDate(strings.Split(update.Message.Text, " ")[1:])
-		diary, err := note.Read(fmt.Sprintf("%s/%s/%s/%s.md", config.Config.Root, year, month, day))
+	tgbot.AddCmd("read", func(ctx *tgbot.Context) {
+		year, month, day := util.GetDate(strings.Split(ctx.Update.Message.Text, " ")[1:])
+		diary, err := note.Read(util.Path(year, month, day))
 		if err != nil {
-			tgbot.Reply(bot, update, "No diary found")
+			ctx.Send("No diary found")
 			return
 		}
-		tgbot.Reply(bot, update, fmt.Sprintf("===== %s/%s/%s.md =====\n%s", year, month, day, diary))
+		ctx.Send(fmt.Sprintf("===== %s/%s/%s.md =====\n%s", year, month, day, diary))
 	})
-	tgbot.AddCmd("write", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
-		year, month, day := util.GetDate(strings.Split(update.Message.Text, " ")[1:])
-		log.Debugln(update.Message.Text)
+	tgbot.AddCmd("write", func(ctx *tgbot.Context) {
+		year, month, day := util.GetDate(strings.Split(ctx.Update.Message.Text, " ")[1:])
+		log.Debugln(ctx.Update.Message.Text)
 
 		// get content
-		a := strings.Split(update.Message.Text, " ")
+		a := strings.Split(ctx.Update.Message.Text, " ")
 		for k, v := range a {
 			_, err := strconv.Atoi(v)
 			if k == 0 || err == nil && k <= 3 {
@@ -50,25 +52,26 @@ func init() {
 		content := "\n" + strings.Trim(strings.Join(a, " "), " ")
 
 		// write
-		err := note.Write(fmt.Sprintf("%s/%s/%s/%s.md", config.Config.Root, year, month, day), content, false)
+		err := note.Write(util.Path(year, month, day), content, false)
 		if err != nil {
-			tgbot.Reply(bot, update, "Write failed")
+			ctx.Send("Write failed")
 			log.Fatal(err)
 			return
 		}
-		tgbot.Reply(bot, update, "write successfully, use /read to read it")
+		ctx.Send("write successfully, use /read to read it")
 	})
-	tgbot.AddCmd("tree", func(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
+	tgbot.AddCmd("tree", func(ctx *tgbot.Context) {
 		tree, err := note.Tree(config.Config.Root)
 		if err != nil {
-			tgbot.Reply(bot, update, "Tree failed")
+			ctx.Send("Tree failed")
 			log.Error(err)
 			return
 		}
-		tgbot.Reply(bot, update, tree)
+		ctx.Send(tree)
 	})
 }
 
-func startBot(token string) {
-	tgbot.Run(token)
+// startBot starts the bot
+func startBot() {
+	tgbot.Run(config.Config.Token)
 }

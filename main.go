@@ -19,7 +19,7 @@ import (
 
 var configPath []string
 
-//go:embed help.txt
+//go:embed help/cli.txt
 var helpText string
 
 func init() {
@@ -59,8 +59,11 @@ func init() {
 	}
 
 	// set log level
-	log.SetLevel(log.ErrorLevel)
-	// log.SetLevel(log.DebugLevel)
+	if config.Config.Debug {
+		log.SetLevel(log.DebugLevel)
+	} else {
+		log.SetLevel(log.ErrorLevel)
+	}
 }
 
 func main() {
@@ -74,7 +77,7 @@ func main() {
 				log.Fatal("token is required")
 			}
 			log.Debugln("start bot")
-			startBot(config.Config.Token)
+			startBot()
 		case "config":
 			for _, v := range configPath {
 				if _, err := os.Stat(v); err == nil {
@@ -91,21 +94,11 @@ func main() {
 			return // do not trigger git commit
 		}
 	} else {
-
 		year, month, day := util.GetDate(os.Args[1:])
 
-		note.Open(fmt.Sprintf("%s/%s/%s/%s.md", config.Config.Root, year, month, day))
+		note.Open(util.Path(year, month, day))
 		log.Debugln("open", year, month, day)
 	}
-	// git save
-	if git.Commit() == nil {
-		fmt.Println("commit notes")
-	}
 
-	if config.Config.GitRepo != "" {
-		log.Debug("git push")
-		if git.Push() == nil {
-			fmt.Println("push notes")
-		}
-	}
+	git.Save()
 }

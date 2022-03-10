@@ -8,6 +8,7 @@ type config struct {
 	Git     string `default:"git"`
 	GitSign bool   `default:"true"`
 	GitRepo string
+	Debug   bool
 }
 
 var Config config

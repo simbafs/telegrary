@@ -1,18 +1,41 @@
 package bot
 
 import (
+	"github.com/simba-fs/telegrary/config"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	log "github.com/sirupsen/logrus"
 )
 
-type Command func(bot *tgbotapi.BotAPI, update *tgbotapi.Update)
+type Context struct {
+	Bot *tgbotapi.BotAPI
+	Update *tgbotapi.Update
+}
+
+// Send sends a message to the user
+func (ctx *Context) Send(text string) {
+	msg := tgbotapi.NewMessage(ctx.Update.Message.Chat.ID, text)
+	// msg.ReplyToMessageID = ctx.Update.Message.MessageID
+	_, err := ctx.Bot.Send(msg)
+	if err != nil {
+		log.Error(err)
+	}
+}
+
+// Call calls another command with the same context
+func (ctx *Context) Call(name string){
+	exec, ok := Commands[name]
+	if !ok {
+		return
+	}
+	exec(ctx)
+}
+
+type Command func(ctx *Context)
 
 var Commands map[string]Command = make(map[string]Command)
-var CommandsList []string = make([]string, 3)
 
 func AddCmd(name string, command Command) {
 	Commands[name] = command
-	CommandsList = append(CommandsList, name)
 }
 
 // Run starts the bot
@@ -22,7 +45,7 @@ func Run(token string) {
 		panic(err)
 	}
 
-	bot.Debug = true
+	bot.Debug = config.Config.Debug
 
 	log.Infof("Authorized on account %s", bot.Self.UserName)
 
@@ -45,12 +68,9 @@ func Run(token string) {
 		if !ok {
 			continue
 		}
-		exec(bot, &update)
+		exec(&Context{
+			Bot: bot, 
+			Update: &update,
+		})
 	}
 }
-
-// Reply sends a message to the chat where the command was received
-func Reply(bot *tgbotapi.BotAPI, update *tgbotapi.Update, text string) {
-	bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, text))
-}
-

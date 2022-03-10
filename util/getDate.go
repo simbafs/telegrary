@@ -1,8 +1,10 @@
 package util
 
-import "strconv"
-import "time"
-import log "github.com/sirupsen/logrus"
+import (
+	"strconv"
+	"time"
+	log "github.com/sirupsen/logrus"
+)
 
 // GetDate returns the current date in the format YYYY MM DD
 func GetDate(raw []string) (string, string, string) {

@@ -1,13 +1,18 @@
 package git
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/simba-fs/telegrary/config"
+
 	log "github.com/sirupsen/logrus"
 
 	"os/exec"
 	"time"
 )
 
+// Commit call git commit with some checking
 func Commit() error {
 	path := config.Config.Root
 
@@ -24,6 +29,15 @@ func Commit() error {
 		return err
 	}
 
+	// status
+	cmd = exec.Command("git", "status")
+	cmd.Dir = path
+	cmd.Stdout = os.Stdout
+	err = cmd.Run()
+	if err != nil {
+		return err
+	}
+
 	// commit
 	flag := "-m"
 	if config.Config.GitSign {
@@ -34,6 +48,7 @@ func Commit() error {
 	return cmd.Run()
 }
 
+// Push push the notes to remote
 func Push() error {
 	path, repo := config.Config.Root, config.Config.GitRepo
 
@@ -49,5 +64,20 @@ func Push() error {
 	err = cmd.Run()
 	log.Debug("git push origin master", err)
 
-	return err 
+	return err
+}
+
+// Save call Commit and Push in a single function with some checking
+func Save() {
+	// git save
+	if Commit() == nil {
+		fmt.Println("commit notes")
+	}
+
+	if config.Config.GitRepo != "" {
+		log.Debug("git push")
+		if Push() == nil {
+			fmt.Println("push notes")
+		}
+	}
 }
