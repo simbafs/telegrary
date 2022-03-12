@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags:
+    - "v[0-9]+.[0-9]+.[0-9]+"
+    branches:
+      - main
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Unshallow
+      run: git fetch --prune --unshallow
+    - name: Set up Go
+      uses: actions/setup-go@v3.0.0
+      with:
+        go-version: 1.17.x
+    - name: Run GoReleaser
+      uses: goreleaser/goreleaser-action@v2.9.1
+      with:
+        version: latest
+        args: release --rm-dist
+      env:
+        GITHUB_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+    - name: ls
+      run: |
+        ls dist
+    - uses: little-core-labs/get-git-tag@v3.0.1
+      id: tagName
+    - name: Upload To Github Release
+      uses: xresloader/upload-to-github-release@v1.3.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        file: "dist/telegrary_*"
+        draft: false
+        tag_name: ${{ steps.tagName.outputs.tag }}
