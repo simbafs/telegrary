@@ -54,3 +54,4 @@ Telegrary 使用 Git 對日記進行版本管理，在編輯、Bot 命令結束�
 | git_repo | string | path to remote git repository                             |
 
 > 路徑列表：`~/.config/telegrary.toml`、`./telegrary.toml`
+
