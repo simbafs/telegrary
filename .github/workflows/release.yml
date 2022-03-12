@@ -31,6 +31,8 @@ jobs:
         ls dist
     - name: Upload To Github Release
       uses: xresloader/upload-to-github-release@v1.3.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         file: "dist/telegrary_*"
         tags: true
