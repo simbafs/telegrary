@@ -35,3 +35,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         file: "dist/telegrary_*"
+        draft: false
+        tag_name: ${{github.ref_name}}
