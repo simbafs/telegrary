@@ -29,6 +29,8 @@ jobs:
     - name: ls
       run: |
         ls dist
+    - uses: little-core-labs/get-git-tag@v3.0.1
+      id: tagName
     - name: Upload To Github Release
       uses: xresloader/upload-to-github-release@v1.3.2
       env:
@@ -36,4 +38,4 @@ jobs:
       with:
         file: "dist/telegrary_*"
         draft: false
-        tag_name: ${{github.ref_name}}
+        tag_name: ${{ steps.tagName.outputs.tag }}
