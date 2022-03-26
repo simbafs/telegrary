@@ -15,7 +15,7 @@ go install github.com/simba-fs/telegrary@latest
 
 # CLI Usage
 ## Telegram Bot(not finish yet)
-Put Telegram bot token in config file(introduced below)   
+Put Telegram bot token and secret(hashed) in config file(introduced below)   
 Execute command `telegrary bot`
 
 ## Bot Commands
@@ -46,3 +46,6 @@ Executing command `telegrary config` to open the nearest config file(file in the
 | git_repo | string | path to remote git repository                             |
 
 > config file path list: `~/.config/telegrary.toml`, `./telegrary.toml`
+
+## Hash
+Use command `telegrary hash <secret>` to get hashed secret, which is stored in `telegrary.toml`

@@ -17,10 +17,11 @@ go install github.com/simba-fs/telegrary@latest
 
 # CLI Usage
 ## Telegram Bot
-把你的 Telegram bot token 放在 `~/.config/telegrary.toml` 或 `./telegrary.toml`，像下面這樣：
+把你的 Telegram bot token 放在 `~/.config/telegrary.toml` 或 `./telegrary.toml`，並設定 secret(hashed)，像下面這樣：
 
 ```toml
 token = "dafjskdsajflkdsajflkdsjflkjdsalkf"
+secret = "fdshafjdafhjdjasnmalfjsdjkf"
 ```
 
 然後執行命令 `telegrary bot`
@@ -55,3 +56,5 @@ Telegrary 使用 Git 對日記進行版本管理，在編輯、Bot 命令結束�
 
 > 路徑列表：`~/.config/telegrary.toml`、`./telegrary.toml`
 
+## Hash
+在 bot 中使用密語驗證使用者身份，為了避免明碼除存密語，因此先經過 hash，你可以用指令 `telegrary hash  <secret>` 來產生 hash 過的密語
