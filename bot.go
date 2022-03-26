@@ -1,9 +1,9 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"strconv"
-	_ "embed"
 
 	"strings"
 
@@ -19,23 +19,49 @@ import (
 //go:embed help/bot.txt
 var help string
 
+var loginedUsers = make(map[string]bool, 0)
+
+func auth(ctx *tgbot.Context) bool {
+	if _, ok := loginedUsers[ctx.Update.Message.From.UserName]; !ok {
+		ctx.Send("please login first")
+		return false
+	}
+	return true
+}
+
 func init() {
-	tgbot.AddCmd("start", func(ctx *tgbot.Context) {
-		ctx.Call("help")
+	tgbot.AddCmd("start", func(ctx *tgbot.Context) bool {
+		args := strings.Split(ctx.Update.Message.Text, " ")
+		if len(args) == 1 {
+			ctx.Send("please enter secret key")
+			return true
+		}
+
+		if util.Hash(args[1]) != config.Config.Secret {
+			ctx.Send("wrong secret key")
+			return true
+		}
+		username := ctx.Update.Message.From.UserName
+		loginedUsers[username] = true
+
+		ctx.Send("Welcome to Telegrary! " + username)
+		return true
 	})
-	tgbot.AddCmd("help", func(ctx *tgbot.Context) {
+	tgbot.AddCmd("help", auth, func(ctx *tgbot.Context) bool {
 		ctx.Send(help)
+		return true
 	})
-	tgbot.AddCmd("read", func(ctx *tgbot.Context) {
+	tgbot.AddCmd("read", auth, func(ctx *tgbot.Context) bool {
 		year, month, day := util.GetDate(strings.Split(ctx.Update.Message.Text, " ")[1:])
 		diary, err := note.Read(util.Path(year, month, day))
 		if err != nil {
 			ctx.Send("No diary found")
-			return
+			return true
 		}
 		ctx.Send(fmt.Sprintf("===== %s/%s/%s.md =====\n%s", year, month, day, diary))
+		return true
 	})
-	tgbot.AddCmd("write", func(ctx *tgbot.Context) {
+	tgbot.AddCmd("write", auth, func(ctx *tgbot.Context) bool {
 		year, month, day := util.GetDate(strings.Split(ctx.Update.Message.Text, " ")[1:])
 		log.Debugln(ctx.Update.Message.Text)
 
@@ -56,18 +82,22 @@ func init() {
 		if err != nil {
 			ctx.Send("Write failed")
 			log.Fatal(err)
-			return
+			return true
 		}
 		ctx.Send("write successfully, use /read to read it")
+
+		return true
 	})
-	tgbot.AddCmd("tree", func(ctx *tgbot.Context) {
+	tgbot.AddCmd("tree", auth, func(ctx *tgbot.Context) bool {
 		tree, err := note.Tree(config.Config.Root)
 		if err != nil {
 			ctx.Send("Tree failed")
 			log.Error(err)
-			return
+			return true
 		}
 		ctx.Send(tree)
+
+		return true
 	})
 }
 

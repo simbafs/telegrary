@@ -1,6 +1,6 @@
 Command List:
 
-/start - print help text
+/start - login
 /help - print help text
 /read [[[year], month], day] - read diary
 /write [[[year], month], day] <content> - write diary

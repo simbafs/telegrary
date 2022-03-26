@@ -30,8 +30,8 @@ func init() {
 	}
 
 	configPath = []string{
-		path.Join(configDir, "telegrary.toml"),
 		path.Join(".", "telegrary.toml"),
+		path.Join(configDir, "telegrary.toml"),
 	}
 
 	// load config
@@ -72,6 +72,11 @@ func main() {
 	if len(os.Args) > 1 {
 		// parse flag
 		switch os.Args[1] {
+		case "hash":
+			if len(os.Args) < 2 {
+				os.Exit(0)
+			}
+			fmt.Println(util.Hash(os.Args[2]))
 		case "bot":
 			if config.Config.Token == "" {
 				log.Fatal("token is required")

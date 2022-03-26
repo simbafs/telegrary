@@ -1,13 +1,13 @@
 package bot
 
 import (
-	"github.com/simba-fs/telegrary/config"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/simba-fs/telegrary/config"
 	log "github.com/sirupsen/logrus"
 )
 
 type Context struct {
-	Bot *tgbotapi.BotAPI
+	Bot    *tgbotapi.BotAPI
 	Update *tgbotapi.Update
 }
 
@@ -22,19 +22,25 @@ func (ctx *Context) Send(text string) {
 }
 
 // Call calls another command with the same context
-func (ctx *Context) Call(name string){
-	exec, ok := Commands[name]
+func (ctx *Context) Call(name string) {
+	cmds, ok := Commands[name]
 	if !ok {
 		return
 	}
-	exec(ctx)
+
+	for _, cmd := range cmds {
+		if !cmd(ctx) {
+			break
+		}
+	}
 }
 
-type Command func(ctx *Context)
+// return false to prevent the next handler from being called
+type CmdHandler func(ctx *Context) bool
 
-var Commands map[string]Command = make(map[string]Command)
+var Commands map[string][]CmdHandler = make(map[string][]CmdHandler)
 
-func AddCmd(name string, command Command) {
+func AddCmd(name string, command ...CmdHandler) {
 	Commands[name] = command
 }
 
@@ -64,13 +70,14 @@ func Run(token string) {
 		}
 
 		// Extract the command from the Message.
-		exec, ok := Commands[update.Message.Command()]
+		handlers, ok := Commands[update.Message.Command()]
 		if !ok {
 			continue
 		}
-		exec(&Context{
-			Bot: bot, 
-			Update: &update,
-		})
+		for _, handler := range handlers {
+			if !handler(&Context{Bot: bot, Update: &update}) {
+				break
+			}
+		}
 	}
 }
