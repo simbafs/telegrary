@@ -3,6 +3,7 @@ package main
 import (
 	_ "embed"
 	"fmt"
+	"path"
 	"strconv"
 
 	"strings"
@@ -89,7 +90,8 @@ func init() {
 		return true
 	})
 	tgbot.AddCmd("tree", auth, func(ctx *tgbot.Context) bool {
-		tree, err := note.Tree(config.Config.Root)
+		prefix := strings.Split(ctx.Update.Message.Text, " ")[1]
+		tree, err := note.Tree(path.Join(config.Config.Root, prefix))
 		if err != nil {
 			ctx.Send("Tree failed")
 			log.Error(err)

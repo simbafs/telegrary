@@ -5,7 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
+
+	"github.com/simba-fs/telegrary/util"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -89,19 +90,5 @@ func Delete(path string) error {
 
 // Tree returns a list of notes in tree form with the given prefix
 func Tree(prefix string) (string, error) {
-	cmd := exec.Command("tree", "-I", "LICENSE|Makefile|new.sh|README.md", prefix)
-	ttree, err := cmd.Output()
-	if err != nil {
-		return "", err
-	}
-
-	tree := string(ttree)
-
-	// remove the first line
-	i := strings.Index(tree, "\n")
-	if i == -1 {
-		return tree, nil
-	}
-
-	return tree[i:], nil
+	return util.Tree(prefix)
 }

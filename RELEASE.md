@@ -8,3 +8,9 @@ Add user auth to bot
 Fix bug in v0.1.10
 
 * prevent telegrary bump into editing mode after `hash` executed
+
+# v0.1.12
+Prune the dependence to Linux command tree
+
+* implement tree with pure golang
+* update bot command `tree` with an argument: prefix

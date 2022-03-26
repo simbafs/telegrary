@@ -84,6 +84,7 @@ func main() {
 			}
 			log.Debugln("start bot")
 			startBot()
+			return
 		case "config":
 			for _, v := range configPath {
 				if _, err := os.Stat(v); err == nil {
@@ -107,4 +108,5 @@ func main() {
 	}
 
 	git.Save()
+	fmt.Println(util.Tree("."))
 }
