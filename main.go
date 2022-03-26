@@ -74,9 +74,10 @@ func main() {
 		switch os.Args[1] {
 		case "hash":
 			if len(os.Args) < 2 {
-				os.Exit(0)
+				return
 			}
 			fmt.Println(util.Hash(os.Args[2]))
+			return
 		case "bot":
 			if config.Config.Token == "" {
 				log.Fatal("token is required")
