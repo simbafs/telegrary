@@ -14,3 +14,9 @@ Prune the dependence to Linux command tree
 
 * implement tree with pure golang
 * update bot command `tree` with an argument: prefix
+
+# v0.1.13
+Fix bug
+
+* fix bug that cannot edit the specific date
+* update README and help text

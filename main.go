@@ -100,13 +100,11 @@ func main() {
 			fmt.Println(helpText)
 			return // do not trigger git commit
 		}
-	} else {
-		year, month, day := util.GetDate(os.Args[1:])
-
-		note.Open(util.Path(year, month, day))
-		log.Debugln("open", year, month, day)
 	}
+	year, month, day := util.GetDate(os.Args[1:])
+
+	note.Open(util.Path(year, month, day))
+	log.Debugln("open", year, month, day)
 
 	git.Save()
-	fmt.Println(util.Tree("."))
 }
