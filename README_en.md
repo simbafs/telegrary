@@ -9,7 +9,6 @@ go install github.com/simba-fs/telegrary@latest
 ```
 
 # Dependency
-* tree
 * git
 * go 1.17+ (I beleve 1.16 also work, but I develop it under 1.17)
 
@@ -19,12 +18,12 @@ Put Telegram bot token and secret(hashed) in config file(introduced below)
 Execute command `telegrary bot`
 
 ## Bot Commands
-| Command                                   | Description                                                 |
-| :---                                      | :---                                                        |
-| `/help`                                   | print help text                                             |
-| `/read [[[year], month], day]`            | read diary                                                  |
-| `/write [[[year], month], day] <content>` | write diary                                                 |
-| `/tree`                                   | list all notes in tree form(This depend on `tree` CLI tool) |
+| Command                                   | Description                 |
+| :---                                      | :---                        |
+| `/help`                                   | print help text             |
+| `/read [[[year], month], day]`            | read diary                  |
+| `/write [[[year], month], day] <content>` | write diary                 |
+| `/tree`                                   | list all notes in tree form |
 
 > It doesn't support Markdown syntax in `/write` besause I still can't get origin message from Telegram bot. I wish I will solve it in the future
 

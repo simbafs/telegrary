@@ -11,7 +11,6 @@ go install github.com/simba-fs/telegrary@latest
 ```
 
 # Dependency
-* tree
 * git
 * go 1.17+ (I beleve 1.16 also work, but I develop it under 1.17)
 
@@ -27,12 +26,12 @@ secret = "fdshafjdafhjdjasnmalfjsdjkf"
 然後執行命令 `telegrary bot`
 
 ## Bot Commands
-| Command                                   | Description                                                 |
-| :---                                      | :---                                                        |
-| `/help`                                   | print help text                                             |
-| `/read [[[year], month], day]`            | read diary                                                  |
-| `/write [[[year], month], day] <content>` | write diary                                                 |
-| `/tree`                                   | list all notes in tree form(This depend on `tree` CLI tool) |
+| Command                                   | Description                 |
+| :---                                      | :---                        |
+| `/help`                                   | print help text             |
+| `/read [[[year], month], day]`            | read diary                  |
+| `/write [[[year], month], day] <content>` | write diary                 |
+| `/tree`                                   | list all notes in tree form |
 
 > 現在 `/write` 還不支援 MD 語法，因為機器人還讀不到原始的文字，MD 語法會被 TG 吃掉，解決中......
 

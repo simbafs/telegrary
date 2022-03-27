@@ -4,4 +4,4 @@ Command List:
 /help - print help text
 /read [[[year], month], day] - read diary
 /write [[[year], month], day] <content> - write diary
-/tree - list all notes in tree form(This depend on tree CLI tool)
+/tree - list all notes in tree form
