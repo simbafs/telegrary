@@ -60,6 +60,8 @@ Telegrary 使用 Git 對日記進行版本管理，在編輯、Bot 命令結束�
 
 # 未來版本規劃
 * v0.1 - 最初版本，基本功能
+	* auto update
+	* auto pull in bot
 * v0.2 - 筆記加密
 * v0.3 - 網頁界面、API
 * v0.4 - 多人共用伺服器
