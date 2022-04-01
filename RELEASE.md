@@ -20,3 +20,10 @@ Fix bug
 
 * fix bug that cannot edit the specific date
 * update README and help text
+
+# v0.1.14
+Fix bug
+
+* fix bug that in bot command `tree`
+* change internal package `bot` context API, add args
+* add future feature in README.md

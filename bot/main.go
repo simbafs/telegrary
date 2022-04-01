@@ -1,6 +1,8 @@
 package bot
 
 import (
+	"strings"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/simba-fs/telegrary/config"
 	log "github.com/sirupsen/logrus"
@@ -9,6 +11,7 @@ import (
 type Context struct {
 	Bot    *tgbotapi.BotAPI
 	Update *tgbotapi.Update
+	Args   []string
 }
 
 // Send sends a message to the user
@@ -69,13 +72,25 @@ func Run(token string) {
 			continue
 		}
 
+		// parse args
+		args := []string{}
+		for _, v := range strings.Split(update.Message.Text, " ") {
+			if v != "" {
+				args = append(args, v)
+			}
+		}
+
 		// Extract the command from the Message.
 		handlers, ok := Commands[update.Message.Command()]
 		if !ok {
 			continue
 		}
 		for _, handler := range handlers {
-			if !handler(&Context{Bot: bot, Update: &update}) {
+			if !handler(&Context{
+				Bot:    bot,
+				Update: &update,
+				Args:   args,
+			}) {
 				break
 			}
 		}

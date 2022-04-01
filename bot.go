@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"path"
 	"strconv"
-
 	"strings"
 
-	tgbot "github.com/simba-fs/telegrary/bot"
 
 	"github.com/simba-fs/telegrary/config"
 	"github.com/simba-fs/telegrary/note"
 	"github.com/simba-fs/telegrary/util"
+	"github.com/simba-fs/telegrary/bot"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -22,7 +21,7 @@ var help string
 
 var loginedUsers = make(map[string]bool, 0)
 
-func auth(ctx *tgbot.Context) bool {
+func auth(ctx *bot.Context) bool {
 	if _, ok := loginedUsers[ctx.Update.Message.From.UserName]; !ok {
 		ctx.Send("please login first")
 		return false
@@ -31,14 +30,13 @@ func auth(ctx *tgbot.Context) bool {
 }
 
 func init() {
-	tgbot.AddCmd("start", func(ctx *tgbot.Context) bool {
-		args := strings.Split(ctx.Update.Message.Text, " ")
-		if len(args) == 1 {
+	bot.AddCmd("start", func(ctx *bot.Context) bool {
+		if len(ctx.Args) == 1 {
 			ctx.Send("please enter secret key")
 			return true
 		}
 
-		if util.Hash(args[1]) != config.Config.Secret {
+		if util.Hash(ctx.Args[1]) != config.Config.Secret {
 			ctx.Send("wrong secret key")
 			return true
 		}
@@ -48,11 +46,11 @@ func init() {
 		ctx.Send("Welcome to Telegrary! " + username)
 		return true
 	})
-	tgbot.AddCmd("help", auth, func(ctx *tgbot.Context) bool {
+	bot.AddCmd("help", auth, func(ctx *bot.Context) bool {
 		ctx.Send(help)
 		return true
 	})
-	tgbot.AddCmd("read", auth, func(ctx *tgbot.Context) bool {
+	bot.AddCmd("read", auth, func(ctx *bot.Context) bool {
 		year, month, day := util.GetDate(strings.Split(ctx.Update.Message.Text, " ")[1:])
 		diary, err := note.Read(util.Path(year, month, day))
 		if err != nil {
@@ -62,7 +60,7 @@ func init() {
 		ctx.Send(fmt.Sprintf("===== %s/%s/%s.md =====\n%s", year, month, day, diary))
 		return true
 	})
-	tgbot.AddCmd("write", auth, func(ctx *tgbot.Context) bool {
+	bot.AddCmd("write", auth, func(ctx *bot.Context) bool {
 		year, month, day := util.GetDate(strings.Split(ctx.Update.Message.Text, " ")[1:])
 		log.Debugln(ctx.Update.Message.Text)
 
@@ -89,8 +87,11 @@ func init() {
 
 		return true
 	})
-	tgbot.AddCmd("tree", auth, func(ctx *tgbot.Context) bool {
-		prefix := strings.Split(ctx.Update.Message.Text, " ")[1]
+	bot.AddCmd("tree", auth, func(ctx *bot.Context) bool {
+		prefix := ""
+		if len(strings.Split(ctx.Update.Message.Text, " ")) > 1 {
+			prefix = strings.Split(ctx.Update.Message.Text, " ")[1]
+		}
 		tree, err := note.Tree(path.Join(config.Config.Root, prefix))
 		if err != nil {
 			ctx.Send("Tree failed")
@@ -105,5 +106,5 @@ func init() {
 
 // startBot starts the bot
 func startBot() {
-	tgbot.Run(config.Config.Token)
+	bot.Run(config.Config.Token)
 }
