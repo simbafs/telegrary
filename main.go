@@ -21,7 +21,7 @@ var (
 	date    string = "unknown"
 	commit  string = "unknown"
 	version string = "unknown"
-	buildBy string = "unknown"
+	builtBy string = "unknown"
 )
 
 var configPath []string
@@ -106,7 +106,7 @@ func main() {
 			git.Push()
 			break
 		case "-v", "--version", "version":
-			fmt.Printf("BuildBy: %s\n", buildBy)
+			fmt.Printf("Builder: %s\n", builtBy)
 			fmt.Printf("BuildTime: %s\n", date)
 			fmt.Printf("GitCommit: %s\n", commit)
 			fmt.Printf("Version: %s\n", version)
