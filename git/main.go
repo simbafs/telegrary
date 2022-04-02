@@ -3,27 +3,25 @@ package git
 import (
 	"fmt"
 	"os"
+	"os/exec"
+	"path"
+	"time"
 
 	"github.com/simba-fs/telegrary/config"
 
 	log "github.com/sirupsen/logrus"
-
-	"os/exec"
-	"time"
 )
 
 // Commit call git commit with some checking
 func Commit() error {
-	path := config.Config.Root
-
 	// init
 	cmd := exec.Command("git", "init")
-	cmd.Dir = path
+	cmd.Dir = config.Config.Root
 	cmd.Run()
 
 	// add
 	cmd = exec.Command("git", "add", ".")
-	cmd.Dir = path
+	cmd.Dir = config.Config.Root
 	err := cmd.Run()
 	if err != nil {
 		return err
@@ -31,7 +29,7 @@ func Commit() error {
 
 	// status
 	cmd = exec.Command("git", "status")
-	cmd.Dir = path
+	cmd.Dir = config.Config.Root
 	cmd.Stdout = os.Stdout
 	err = cmd.Run()
 	if err != nil {
@@ -44,23 +42,21 @@ func Commit() error {
 		flag = "-sm"
 	}
 	cmd = exec.Command("git", "commit", flag, time.Now().Format("2006-01-02"))
-	cmd.Dir = path
+	cmd.Dir = config.Config.Root
 	return cmd.Run()
 }
 
 // Push push the notes to remote
 func Push() error {
-	path, repo := config.Config.Root, config.Config.GitRepo
-
 	// add remote
-	cmd := exec.Command("git", "remote", "add", "origin", repo)
-	cmd.Dir = path
+	cmd := exec.Command("git", "remote", "add", "origin", config.Config.GitRepo)
+	cmd.Dir = config.Config.Root
 	err := cmd.Run()
 	log.Debug("git remote add origin", err)
 
 	// push
 	cmd = exec.Command("git", "push", "origin", "main")
-	cmd.Dir = path
+	cmd.Dir = config.Config.Root
 	err = cmd.Run()
 	log.Debug("git push origin master", err)
 
@@ -79,5 +75,24 @@ func Save() {
 		if Push() == nil {
 			fmt.Println("push notes")
 		}
+	}
+}
+
+// Pull pull/clone the notes from remote
+func Pull() error {
+	if config.Config.GitRepo == "" {
+		return nil
+	}
+
+	if _, err := os.Stat(config.Config.Root); os.IsNotExist(err) {
+		// clone
+		cmd := exec.Command("git", "clone", config.Config.GitRepo, config.Config.Root)
+		cmd.Dir = path.Join(config.Config.Root, "..")
+		return cmd.Run()
+	} else {
+		// pull
+		cmd := exec.Command("git", "pull")
+		cmd.Dir = config.Config.Root
+		return cmd.Run()
 	}
 }

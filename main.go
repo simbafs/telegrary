@@ -79,6 +79,7 @@ func main() {
 			fmt.Println(util.Hash(os.Args[2]))
 			return
 		case "bot":
+			git.Pull()
 			if config.Config.Token == "" {
 				log.Fatal("token is required")
 			}
@@ -95,12 +96,14 @@ func main() {
 			note.Open(configPath[0])
 			return // do not trigger git commit
 		case "push":
+			git.Push()
 			break
 		case "-h", "--help", "help":
 			fmt.Println(helpText)
 			return // do not trigger git commit
 		}
 	}
+	git.Pull()
 	year, month, day := util.GetDate(os.Args[1:])
 
 	note.Open(util.Path(year, month, day))

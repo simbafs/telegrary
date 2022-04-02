@@ -27,3 +27,8 @@ Fix bug
 * fix bug that in bot command `tree`
 * change internal package `bot` context API, add args
 * add future feature in README.md
+
+# v0.1.15
+Auto pull before operations
+
+* auto pull before bot command `write`, `read` and `tree`

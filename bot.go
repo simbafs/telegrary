@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"strings"
 
-
+	"github.com/simba-fs/telegrary/bot"
 	"github.com/simba-fs/telegrary/config"
+	"github.com/simba-fs/telegrary/git"
 	"github.com/simba-fs/telegrary/note"
 	"github.com/simba-fs/telegrary/util"
-	"github.com/simba-fs/telegrary/bot"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -51,6 +51,7 @@ func init() {
 		return true
 	})
 	bot.AddCmd("read", auth, func(ctx *bot.Context) bool {
+		git.Pull()
 		year, month, day := util.GetDate(strings.Split(ctx.Update.Message.Text, " ")[1:])
 		diary, err := note.Read(util.Path(year, month, day))
 		if err != nil {
@@ -61,6 +62,7 @@ func init() {
 		return true
 	})
 	bot.AddCmd("write", auth, func(ctx *bot.Context) bool {
+		git.Pull()
 		year, month, day := util.GetDate(strings.Split(ctx.Update.Message.Text, " ")[1:])
 		log.Debugln(ctx.Update.Message.Text)
 
@@ -84,10 +86,12 @@ func init() {
 			return true
 		}
 		ctx.Send("write successfully, use /read to read it")
+		git.Push()
 
 		return true
 	})
 	bot.AddCmd("tree", auth, func(ctx *bot.Context) bool {
+		git.Pull()
 		prefix := ""
 		if len(strings.Split(ctx.Update.Message.Text, " ")) > 1 {
 			prefix = strings.Split(ctx.Update.Message.Text, " ")[1]
