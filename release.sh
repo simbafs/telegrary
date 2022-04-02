@@ -5,6 +5,7 @@ if [ -z "$1" ]; then
 	read VERSION
 fi
 VERSION=${1:-$VERSION}
+git push
 echo "Releasing version $VERSION ..."
 git tag -as $VERSION
 git push origin --tags
