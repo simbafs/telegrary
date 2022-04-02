@@ -17,6 +17,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var (
+	date    string = "unknown"
+	commit  string = "unknown"
+	version string = "unknown"
+	buildBy string = "unknown"
+)
+
 var configPath []string
 
 //go:embed help/cli.txt
@@ -98,6 +105,12 @@ func main() {
 		case "push":
 			git.Push()
 			break
+		case "-v", "--version", "version":
+			fmt.Printf("BuildBy: %s\n", buildBy)
+			fmt.Printf("BuildTime: %s\n", date)
+			fmt.Printf("GitCommit: %s\n", commit)
+			fmt.Printf("Version: %s\n", version)
+			return
 		case "-h", "--help", "help":
 			fmt.Println(helpText)
 			return // do not trigger git commit

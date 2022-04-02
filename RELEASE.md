@@ -32,3 +32,8 @@ Fix bug
 Auto pull before operations
 
 * auto pull before bot command `write`, `read` and `tree`
+
+# v0.1.16
+Test goreleaser setting
+
+* add version command to get build time, commit, version and builder

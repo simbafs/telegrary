@@ -6,11 +6,12 @@ Usage:
   telegrary <flag>
 
 Available Commands:
+  help           Show this help
   hash           Print the hash of args[2], this is used in telegram bot
   bot            Start telegram bot
   config         Edit config file
-  help           Show this help
   push           Commit and push to remote(if exist)
+  version        get version and build info
 
 Flags:
   -h, --help     Show this help
