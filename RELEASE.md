@@ -37,3 +37,6 @@ Auto pull before operations
 Test goreleaser setting
 
 * add version command to get build time, commit, version and builder
+
+# v0.1.17
+embed version and commit into file

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/simba-fs/telegrary/config"
 	"github.com/simba-fs/telegrary/git"
@@ -18,10 +19,12 @@ import (
 )
 
 var (
+	//go:embed COMMIT
+	commit  string
+	//go:embed VERSION
+	version string
 	date    string = "unknown"
-	commit  string = "unknown"
-	version string = "unknown"
-	builtBy string = "unknown"
+	builtBy string = "selfbuild"
 )
 
 var configPath []string
@@ -71,6 +74,10 @@ func init() {
 	} else {
 		log.SetLevel(log.ErrorLevel)
 	}
+	
+	// formet buildinfo
+	version = strings.Trim(version, "\n")
+	commit = strings.Trim(commit, "\n")
 }
 
 func main() {
