@@ -12,7 +12,7 @@ go install github.com/simba-fs/telegrary@latest
 
 # Dependency
 * git
-* go 1.17+ (I beleve 1.16 also work, but I develop it under 1.17)
+* go 1.17+ (I beleve 1.16 also work, but I develop it with go1.17)
 
 # CLI Usage
 ## Telegram Bot
