@@ -66,9 +66,11 @@ func Push() error {
 // Save call Commit and Push in a single function with some checking
 func Save() {
 	// git save
-	if Commit() == nil {
-		fmt.Println("commit notes")
+	if Commit() != nil {
+		fmt.Println("Error occurred when commit")
+		return
 	}
+	fmt.Println("commit notes")
 
 	if config.Config.GitRepo != "" {
 		log.Debug("git push")

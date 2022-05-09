@@ -39,4 +39,10 @@ Test goreleaser setting
 * add version command to get build time, commit, version and builder
 
 # v0.1.17
-embed version and commit into file
+Fix command version
+
+* embed version and commit into file
+
+# v0.1.18
+Fix commit/push process
+

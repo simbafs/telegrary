@@ -9,6 +9,9 @@ VERSION=${1:-$VERSION}
 echo $VERSION | sed -e 's/v//' > VERSION
 echo $(git rev-list -n 1 $VERSION) > COMMIT
 
+echo commit $(cat COMMIT)
+echo version $(cat VERSION)
+
 git push
 echo "Releasing version $VERSION ..."
 git tag -as $VERSION

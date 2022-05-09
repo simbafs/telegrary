@@ -20,7 +20,7 @@ import (
 
 var (
 	//go:embed COMMIT
-	commit  string
+	commit string
 	//go:embed VERSION
 	version string
 	date    string = "unknown"
@@ -74,7 +74,7 @@ func init() {
 	} else {
 		log.SetLevel(log.ErrorLevel)
 	}
-	
+
 	// formet buildinfo
 	version = strings.Trim(version, "\n")
 	commit = strings.Trim(commit, "\n")
